@@ -14,6 +14,7 @@
             font-family: 'Courier New', Courier, monospace;
             background-color: black;
             color: white;
+            cursor: pointer; /* Suggests interactivity */
         }
 
         /* --- INTRO SCREEN --- */
@@ -268,7 +269,7 @@
     <div id="intro-screen">
         <div id="intro-text">
             you've been selected to preview my fuck ass album!<br>
-            press enter to get started babe
+            push to start babe
         </div>
     </div>
 
@@ -310,15 +311,21 @@
         let hasStarted = false;
 
         // --- INTRO SCREEN LOGIC ---
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && introScreen.style.opacity !== '0') {
+        function startApp() {
+            if (introScreen.style.opacity !== '0') {
                 introScreen.style.opacity = '0';
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                     mainApp.style.display = 'block';
                 }, 1000); // Matches CSS transition time
             }
-        });
+        }
+
+        // Listen for any keypress
+        document.addEventListener('keydown', startApp);
+        
+        // Listen for any click on the document
+        document.addEventListener('click', startApp);
 
         // --- LOAD SONG FUNCTION ---
         function loadSong(index) {
@@ -348,7 +355,8 @@
         }
 
         // --- PLAY/PAUSE LOGIC (Trackball) ---
-        trackballBtn.onclick = () => {
+        trackballBtn.onclick = (e) => {
+            e.stopPropagation(); // Prevents click from bubbling up to document listener
             if (audioPlayer.paused) {
                 if (!audioPlayer.src) loadSong(currentSongIndex);
                 audioPlayer.play();
@@ -367,25 +375,29 @@
         };
 
         // --- D-PAD LOGIC (Previous/Next Carousel) ---
-        dpadLeft.onclick = () => {
+        dpadLeft.onclick = (e) => {
+            e.stopPropagation();
             currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length;
             loadSong(currentSongIndex);
             audioPlayer.play();
             updateInterfaceState();
         };
 
-        dpadRight.onclick = () => {
+        dpadRight.onclick = (e) => {
+            e.stopPropagation();
             currentSongIndex = (currentSongIndex + 1) % songFiles.length;
             loadSong(currentSongIndex);
             audioPlayer.play();
             updateInterfaceState();
         };
 
-        dpadUp.onclick = () => {
+        dpadUp.onclick = (e) => {
+            e.stopPropagation();
             if (audioPlayer.volume < 1.0) audioPlayer.volume = Math.min(1.0, audioPlayer.volume + 0.1);
         };
 
-        dpadDown.onclick = () => {
+        dpadDown.onclick = (e) => {
+            e.stopPropagation();
             if (audioPlayer.volume > 0.0) audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1);
         };
 
