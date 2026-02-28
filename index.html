@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sidekick Music Interface</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
             background-color: black;
             color: white;
             cursor: pointer;
+            position: fixed;
         }
 
         /* --- INTRO SCREEN --- */
@@ -22,8 +23,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             background-color: black;
             display: flex;
             justify-content: center;
@@ -36,7 +37,7 @@
         }
         
         #intro-text {
-            font-size: 24px;
+            font-size: 22px;
             line-height: 1.5;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             animation: fadeIn 1.5s ease-in;
@@ -50,15 +51,15 @@
         /* --- MAIN APPLICATION (Hidden Initially) --- */
         #main-app {
             display: none;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             position: relative;
         }
 
         /* --- BACKGROUND GIF --- */
         #app-container {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             position: relative;
         }
         
@@ -91,11 +92,11 @@
         }
         
         #app-container.paused::before {
-            animation: bgSpeed 2s linear infinite; /* 50% speed */
+            animation: bgSpeed 2s linear infinite;
         }
         
         #app-container.paused::after {
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.5);
         }
         
         @keyframes bgSpeed {
@@ -103,51 +104,67 @@
             to { background-position: 0 0; }
         }
 
-        /* --- OVERLAY GIF --- */
-        #overlay-gif {
+        /* --- PHONE CONTAINER & OVERLAY GIF --- */
+        #phone-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('overlay.gif');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw; /* Fits full width on mobile */
+            max-width: 691px; /* Increased by another 20% from 576px */
+            height: auto;
             z-index: 2;
+            container-type: inline-size;
+        }
+
+        #overlay-gif {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         
         /* --- START PROMPT --- */
         #start-prompt {
             position: absolute;
-            top: 50%;
+            top: 40%; /* Moved down from 37% by approx 10px */
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 30;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
             text-transform: uppercase;
             text-shadow: 2px 2px 4px #000;
             animation: blink 1s step-start infinite;
             transition: opacity 0.5s ease-out;
+            width: 80%;
         }
         
         @keyframes blink {
             50% { opacity: 0; }
         }
 
+        /* --- CONTROLS POSITIONING --- */
+        .controls-wrapper {
+            position: absolute;
+            /* Position relative to the phone container */
+            bottom: 15%; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 30cqw;
+            align-items: center;
+            z-index: 20;
+        }
+
         /* --- DIRECTIONAL PAD (D-PAD) --- */
         #dpad {
-            position: absolute;
-            top: calc(65% - 20px);
-            left: calc(25% + 9px - 25px - 10px - 10px - 5px - 5px); 
-            width: calc(52.5px * 2);
-            height: calc(52.5px * 2);
-            z-index: 20;
-            background-color: rgba(255, 255, 255, 0.2);
+            width: 9cqw;
+            height: 9cqw;
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            opacity: 0.4;
-            transition: opacity 0.3s;
+            opacity: 0.6;
             display: grid;
             grid-template-areas:
                 ". up ."
@@ -155,9 +172,17 @@
                 ". down .";
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr 1fr;
+            position: relative;
+            left: -21cqw;
+            top: -7.5cqw;
         }
-        
-        #dpad:hover { opacity: 0.7; }
+
+        /* Desktop-specific horizontal alignment fix */
+        @media (min-width: 1024px) {
+            #dpad {
+                left: -19cqw; /* Shifted 2% right from -21cqw */
+            }
+        }
 
         .dpad-btn {
             background-color: transparent;
@@ -166,6 +191,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;
         }
         
         /* --- WHITE TRIANGLES --- */
@@ -174,48 +200,47 @@
             height: 0;
             border-style: solid;
         }
-        #dpad-up .triangle { border-width: 0 8px 12px 8px; border-color: transparent transparent white transparent; }
-        #dpad-down .triangle { border-width: 12px 8px 0 8px; border-color: white transparent transparent transparent; }
-        #dpad-left .triangle { border-width: 8px 12px 8px 0; border-color: transparent white transparent transparent; }
-        #dpad-right .triangle { border-width: 8px 0 8px 12px; border-color: transparent transparent transparent white; }
+        #dpad-up .triangle { border-width: 0 3px 5px 3px; border-color: transparent transparent white transparent; }
+        #dpad-down .triangle { border-width: 5px 3px 0 3px; border-color: white transparent transparent transparent; }
+        #dpad-left .triangle { border-width: 3px 5px 3px 0; border-color: transparent white transparent transparent; }
+        #dpad-right .triangle { border-width: 3px 0 3px 5px; border-color: transparent transparent transparent white; }
         
-        #dpad-up { grid-area: up; }
+        #dpad-up { 
+            grid-area: up; 
+            position: relative;
+            top: -0.5cqw;
+        }
         #dpad-down { grid-area: down; }
         #dpad-left { grid-area: left; }
         #dpad-right { grid-area: right; }
 
         /* --- TRACKBALL BUTTON --- */
         #trackball-btn {
-            position: absolute;
-            top: calc(65% + 0px);
-            right: calc(25% + 9px); 
-            width: 52.5px;
-            height: 52.5px;
-            background-color: transparent;
+            width: 3.75cqw;
+            height: 3.75cqw;
+            background-color: rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            z-index: 20;
             border-radius: 50%;
-            transition: background-color 0.3s;
+            border: 0.5cqw solid rgba(255,255,255,0.3);
+            position: relative;
+            right: -15.25cqw;
+            top: -8cqw;
         }
         
-        /* --- TRACKBALL PULSE (Initial state) --- */
         #trackball-btn.pulse {
             animation: trackballPulse 1.5s infinite ease-in-out;
         }
         
         @keyframes trackballPulse {
-            0% { background-color: rgba(255, 255, 255, 0.2); }
-            50% { background-color: rgba(255, 255, 255, 0.4); }
-            100% { background-color: rgba(255, 255, 255, 0.2); }
+            0% { background-color: rgba(255, 255, 255, 0.1); }
+            50% { background-color: rgba(255, 255, 255, 0.3); }
+            100% { background-color: rgba(255, 255, 255, 0.1); }
         }
         
-        /* --- HOVER EFFECT --- */
-        #trackball-btn:hover {
-            background-color: rgba(255, 255, 255, 0.6);
+        #trackball-btn:active, #trackball-btn:hover {
             animation: hoverRainbowFill 2.4s infinite linear;
         }
         
-        /* --- CONSTANT SLOW ANIMATION (Playing) --- */
         #trackball-btn.playing {
             animation: rainbowFill 1.2s infinite linear;
         }
@@ -243,53 +268,36 @@
             100% { background-color: rgba(255, 0, 0, 0.1); }
         }
 
-        /* --- MOBILE RESPONSIVE QUERIES --- */
-        @media (max-width: 768px) {
-            #intro-text { font-size: 18px; }
-            
-            /* UPDATED MOBILE POSITIONING FOR SIDEKICK */
-            #dpad {
-                width: 90px;
-                height: 90px;
-                top: 76%; /* Positioned vertically */
-                left: 10%; /* Positioned horizontally */
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-            
-            #trackball-btn {
-                width: 55px;
-                height: 55px;
-                top: 77.5%; /* Positioned vertically */
-                right: 12%; /* Positioned horizontally */
-                background-color: rgba(255, 255, 255, 0.1);
-            }
-        }
-
     </style>
 </head>
 <body>
 
     <div id="intro-screen">
         <div id="intro-text">
-            you've been selected to preview my fuck ass album!<br>
-            push to start babe
+            hi! you've been selected to preview my album!<br><br>
+            press anywhere to enter :)
         </div>
     </div>
 
     <div id="main-app">
         <div id="app-container" class="paused">
-            <div id="overlay-gif"></div>
             
-            <div id="start-prompt">Push Trackball to Start</div>
-            
-            <div id="dpad">
-                <button id="dpad-up" class="dpad-btn" title="Volume Up"><div class="triangle"></div></button>
-                <button id="dpad-down" class="dpad-btn" title="Volume Down"><div class="triangle"></div></button>
-                <button id="dpad-left" class="dpad-btn" title="Previous Track"><div class="triangle"></div></button>
-                <button id="dpad-right" class="dpad-btn" title="Next Track"><div class="triangle"></div></button>
+            <div id="phone-container">
+                <img id="overlay-gif" src="overlay.gif" alt="Phone">
+                
+                <div class="controls-wrapper">
+                    <div id="dpad">
+                        <button id="dpad-up" class="dpad-btn" title="Volume Up"><div class="triangle"></div></button>
+                        <button id="dpad-down" class="dpad-btn" title="Volume Down"><div class="triangle"></div></button>
+                        <button id="dpad-left" class="dpad-btn" title="Previous Track"><div class="triangle"></div></button>
+                        <button id="dpad-right" class="dpad-btn" title="Next Track"><div class="triangle"></div></button>
+                    </div>
+                    
+                    <div id="trackball-btn" class="pulse" title="Play/Pause"></div>
+                </div>
             </div>
             
-            <div id="trackball-btn" class="pulse" title="Play/Pause"></div>
+            <div id="start-prompt">push trackball to start</div>
         </div>
     </div>
 
@@ -315,19 +323,17 @@
 
         // --- INTRO SCREEN LOGIC ---
         function startApp() {
-            if (introScreen.style.opacity !== '0') {
+            if (introScreen.style.display !== 'none') {
                 introScreen.style.opacity = '0';
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                     mainApp.style.display = 'block';
-                }, 1000); // Matches CSS transition time
+                }, 1000);
             }
         }
 
-        // Listen for any keypress
         document.addEventListener('keydown', startApp);
-        
-        // Listen for any click on the document
+        document.addEventListener('touchstart', startApp);
         document.addEventListener('click', startApp);
 
         // --- LOAD SONG FUNCTION ---
@@ -335,20 +341,17 @@
             audioPlayer.src = `snippets/${songFiles[index]}`;
         }
 
-        // --- UPDATE LIGHT STATE AND BG SPEED/DIM ---
+        // --- UPDATE LIGHT STATE ---
         function updateInterfaceState() {
             if (audioPlayer.paused) {
                 trackballBtn.classList.remove('playing');
-                appContainer.classList.add('paused'); // Slow down BG & Add Dim
-                
-                // Re-enable pulse if paused and started, to show it's interactable
+                appContainer.classList.add('paused');
                 if (hasStarted) trackballBtn.classList.add('pulse');
             } else {
                 trackballBtn.classList.add('playing');
-                trackballBtn.classList.remove('pulse'); // Remove pulse when playing
-                appContainer.classList.remove('paused'); // Normal BG speed & Remove Dim
+                trackballBtn.classList.remove('pulse');
+                appContainer.classList.remove('paused');
                 
-                // Hide prompt permanently on first play
                 if (!hasStarted) {
                     startPrompt.style.opacity = '0';
                     setTimeout(() => startPrompt.style.display = 'none', 500);
@@ -357,9 +360,9 @@
             }
         }
 
-        // --- PLAY/PAUSE LOGIC (Trackball) ---
+        // --- PLAY/PAUSE LOGIC ---
         trackballBtn.onclick = (e) => {
-            e.stopPropagation(); // Prevents click from bubbling up to document listener
+            e.stopPropagation();
             if (audioPlayer.paused) {
                 if (!audioPlayer.src) loadSong(currentSongIndex);
                 audioPlayer.play();
@@ -369,7 +372,7 @@
             updateInterfaceState();
         };
 
-        // --- AUTO-PLAY NEXT SONG (Infinite Carousel) ---
+        // --- AUTO-PLAY NEXT SONG ---
         audioPlayer.onended = () => {
             currentSongIndex = (currentSongIndex + 1) % songFiles.length;
             loadSong(currentSongIndex);
@@ -377,7 +380,7 @@
             updateInterfaceState();
         };
 
-        // --- D-PAD LOGIC (Previous/Next Carousel) ---
+        // --- D-PAD LOGIC ---
         dpadLeft.onclick = (e) => {
             e.stopPropagation();
             currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length;
@@ -404,7 +407,6 @@
             if (audioPlayer.volume > 0.0) audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1);
         };
 
-        // Initialize first song
         loadSong(currentSongIndex);
     </script>
 </body>
