@@ -14,7 +14,7 @@
             font-family: 'Courier New', Courier, monospace;
             background-color: black;
             color: white;
-            cursor: pointer; /* Suggests interactivity */
+            cursor: pointer;
         }
 
         /* --- INTRO SCREEN --- */
@@ -247,18 +247,21 @@
         @media (max-width: 768px) {
             #intro-text { font-size: 18px; }
             
+            /* UPDATED MOBILE POSITIONING FOR SIDEKICK */
             #dpad {
-                width: 100px;
-                height: 100px;
-                top: 75%;
-                left: 15%;
+                width: 90px;
+                height: 90px;
+                top: 76%; /* Positioned vertically */
+                left: 10%; /* Positioned horizontally */
+                background-color: rgba(255, 255, 255, 0.1);
             }
             
             #trackball-btn {
-                width: 70px;
-                height: 70px;
-                top: 75%;
-                right: 15%;
+                width: 55px;
+                height: 55px;
+                top: 77.5%; /* Positioned vertically */
+                right: 12%; /* Positioned horizontally */
+                background-color: rgba(255, 255, 255, 0.1);
             }
         }
 
