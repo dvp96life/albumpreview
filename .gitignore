@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+package-lock.json
+*.log
+# Python & Build files
+__pycache__/
+build/
+dist/
+*.spec
+
+# OS files
+.DS_Store
