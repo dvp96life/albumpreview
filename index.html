@@ -143,8 +143,10 @@
             
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 2px 2px 4px #000;
             
+            /* --- UPDATED: Instant disappearance transition --- */
             animation: smoothPulse 2s infinite ease-in-out;
-            transition: opacity 0.5s ease-out;
+            transition: none; 
+            opacity: 1;
             width: 80%;
         }
         
@@ -233,7 +235,6 @@
             border-radius: 50%;
             border: 0.5cqw solid rgba(255,255,255,0.3);
             position: relative;
-            /* --- UPDATED: Reverted to previous relative positioning --- */
             right: -14.26cqw; 
             top: -8cqw;
         }
@@ -364,8 +365,8 @@
                 appContainer.classList.remove('paused');
                 
                 if (!hasStarted) {
-                    startPrompt.style.opacity = '0';
-                    setTimeout(() => startPrompt.style.display = 'none', 500);
+                    /* --- UPDATED: Instant disappearance --- */
+                    startPrompt.style.display = 'none'; 
                     hasStarted = true;
                 }
             }
