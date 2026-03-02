@@ -61,6 +61,10 @@
             width: 100%;
             height: 100%;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         #app-container::before {
@@ -106,15 +110,13 @@
 
         /* --- PHONE CONTAINER & OVERLAY GIF --- */
         #phone-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw; /* Fits full width on mobile */
-            max-width: 691px; /* Increased by another 20% from 576px */
+            position: relative;
+            width: 100vw;
+            max-width: 691px;
             height: auto;
             z-index: 2;
             container-type: inline-size;
+            margin: 0;
         }
 
         #overlay-gif {
@@ -126,27 +128,35 @@
         /* --- START PROMPT --- */
         #start-prompt {
             position: absolute;
-            top: 40%; /* Moved down from 37% by approx 10px */
+            top: calc(50% + 280px);
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             z-index: 30;
-            font-size: 18px;
+            
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #fff;
+            
             text-align: center;
             text-transform: uppercase;
-            text-shadow: 2px 2px 4px #000;
-            animation: blink 1s step-start infinite;
+            
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 2px 2px 4px #000;
+            
+            animation: smoothPulse 2s infinite ease-in-out;
             transition: opacity 0.5s ease-out;
             width: 80%;
         }
         
-        @keyframes blink {
-            50% { opacity: 0; }
+        @keyframes smoothPulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
 
         /* --- CONTROLS POSITIONING --- */
         .controls-wrapper {
             position: absolute;
-            /* Position relative to the phone container */
             bottom: 15%; 
             left: 50%;
             transform: translateX(-50%);
@@ -180,7 +190,7 @@
         /* Desktop-specific horizontal alignment fix */
         @media (min-width: 1024px) {
             #dpad {
-                left: -19cqw; /* Shifted 2% right from -21cqw */
+                left: -19cqw;
             }
         }
 
@@ -223,7 +233,8 @@
             border-radius: 50%;
             border: 0.5cqw solid rgba(255,255,255,0.3);
             position: relative;
-            right: -15.25cqw;
+            /* --- UPDATED: Reverted to previous relative positioning --- */
+            right: -14.26cqw; 
             top: -8cqw;
         }
         
