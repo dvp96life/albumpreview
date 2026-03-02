@@ -11,7 +11,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             background-color: black;
             color: white;
             cursor: pointer;
@@ -30,6 +30,7 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
+            /* Fade transition on the intro screen itself */
             transition: opacity 1s ease-out;
             text-align: center;
             padding: 20px;
@@ -39,7 +40,7 @@
         #intro-text {
             font-size: 22px;
             line-height: 1.5;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
             animation: fadeIn 1.5s ease-in;
         }
         
@@ -117,6 +118,7 @@
             z-index: 2;
             container-type: inline-size;
             margin: 0;
+            filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
         }
 
         #overlay-gif {
@@ -125,35 +127,80 @@
             display: block;
         }
         
-        /* --- START PROMPT --- */
-        #start-prompt {
+        /* --- PLAYER DISPLAY (Replaces Start Prompt) --- */
+        #player-display {
             position: absolute;
-            top: calc(50% + 280px);
+            top: calc(50% + 250px);
             left: 50%;
             transform: translateX(-50%);
             z-index: 30;
-            
+            width: 80%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #track-info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            display: none; /* Hidden until playback */
+        }
+        
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            /* 50% Opaque Rainbow Animation */
+            background-color: rgba(0, 255, 0, 0.5);
+            animation: rainbowPulse 2s infinite linear;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        /* --- START PROMPT --- */
+        #start-prompt {
             font-size: 24px;
             font-weight: bold;
             letter-spacing: 1px;
             color: #fff;
-            
-            text-align: center;
-            text-transform: uppercase;
-            
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 2px 2px 4px #000;
-            
-            /* --- UPDATED: Instant disappearance transition --- */
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 2px 2px 4px rgba(0,0,0,0.5);
             animation: smoothPulse 2s infinite ease-in-out;
-            transition: none; 
-            opacity: 1;
-            width: 80%;
+            transition: opacity 0.5s ease; 
+            text-transform: uppercase;
         }
         
         @keyframes smoothPulse {
             0% { opacity: 0.5; }
             50% { opacity: 1; }
             100% { opacity: 0.5; }
+        }
+
+        /* --- VOLUME DISPLAY --- */
+        #volume-display {
+            position: absolute;
+            top: calc(50% - 250px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            font-size: 18px;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            background-color: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: none;
         }
 
         /* --- CONTROLS POSITIONING --- */
@@ -189,7 +236,6 @@
             top: -7.5cqw;
         }
 
-        /* Desktop-specific horizontal alignment fix */
         @media (min-width: 1024px) {
             #dpad {
                 left: -19cqw;
@@ -257,7 +303,7 @@
             animation: rainbowFill 1.2s infinite linear;
         }
 
-        /* --- RAINBOW ANIMATION --- */
+        /* --- RAINBOW ANIMATIONS --- */
         @keyframes rainbowFill {
             0% { background-color: rgba(255, 0, 0, 0.4); }
             15% { background-color: rgba(255, 165, 0, 0.4); }
@@ -278,6 +324,17 @@
             75% { background-color: rgba(75, 0, 130, 0.1); }
             90% { background-color: rgba(238, 130, 238, 0.1); }
             100% { background-color: rgba(255, 0, 0, 0.1); }
+        }
+        
+        @keyframes rainbowPulse {
+            0% { background-color: rgba(255, 0, 0, 0.5); }
+            15% { background-color: rgba(255, 165, 0, 0.5); }
+            30% { background-color: rgba(255, 255, 0, 0.5); }
+            45% { background-color: rgba(0, 255, 0, 0.5); }
+            60% { background-color: rgba(0, 0, 255, 0.5); }
+            75% { background-color: rgba(75, 0, 130, 0.5); }
+            90% { background-color: rgba(238, 130, 238, 0.5); }
+            100% { background-color: rgba(255, 0, 0, 0.5); }
         }
 
     </style>
@@ -309,7 +366,15 @@
                 </div>
             </div>
             
-            <div id="start-prompt">push trackball to start</div>
+            <div id="player-display">
+                <div id="start-prompt">push trackball to start</div>
+                <div id="track-info">TRACK: 1</div>
+                <div id="progress-container">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div id="volume-display">VOL: 100%</div>
         </div>
     </div>
 
@@ -323,6 +388,12 @@
         const appContainer = document.getElementById('app-container');
         const introScreen = document.getElementById('intro-screen');
         const mainApp = document.getElementById('main-app');
+        const volumeDisplay = document.getElementById('volume-display');
+        
+        // Progress Bar Elements
+        const trackInfo = document.getElementById('track-info');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
         
         // D-Pad Elements
         const dpadUp = document.getElementById('dpad-up');
@@ -332,14 +403,20 @@
         
         let currentSongIndex = 0;
         let hasStarted = false;
+        let volumeTimeout;
 
         // --- INTRO SCREEN LOGIC ---
         function startApp() {
             if (introScreen.style.display !== 'none') {
+                // Fade out the intro screen
                 introScreen.style.opacity = '0';
+                
+                // Show main app immediately
+                mainApp.style.display = 'block';
+                
+                // Remove intro screen from DOM after transition
                 setTimeout(() => {
                     introScreen.style.display = 'none';
-                    mainApp.style.display = 'block';
                 }, 1000);
             }
         }
@@ -351,9 +428,10 @@
         // --- LOAD SONG FUNCTION ---
         function loadSong(index) {
             audioPlayer.src = `snippets/${songFiles[index]}`;
+            trackInfo.innerText = `TRACK: ${index + 1}`;
         }
 
-        // --- UPDATE LIGHT STATE ---
+        // --- UPDATE INTERFACE STATE ---
         function updateInterfaceState() {
             if (audioPlayer.paused) {
                 trackballBtn.classList.remove('playing');
@@ -365,11 +443,35 @@
                 appContainer.classList.remove('paused');
                 
                 if (!hasStarted) {
-                    /* --- UPDATED: Instant disappearance --- */
-                    startPrompt.style.display = 'none'; 
+                    // Hide prompt, show progress bar
+                    startPrompt.style.opacity = '0'; 
+                    setTimeout(() => {
+                        startPrompt.style.display = 'none';
+                        progressContainer.style.display = 'block';
+                        trackInfo.style.opacity = '1';
+                    }, 500);
                     hasStarted = true;
                 }
             }
+        }
+
+        // --- PROGRESS BAR UPDATE ---
+        audioPlayer.ontimeupdate = () => {
+            if (audioPlayer.duration) {
+                const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+            }
+        };
+
+        // --- SHOW VOLUME DISPLAY ---
+        function showVolume() {
+            volumeDisplay.innerText = `VOL: ${Math.round(audioPlayer.volume * 100)}%`;
+            volumeDisplay.style.display = 'block';
+            
+            clearTimeout(volumeTimeout);
+            volumeTimeout = setTimeout(() => {
+                volumeDisplay.style.display = 'none';
+            }, 2000);
         }
 
         // --- PLAY/PAUSE LOGIC ---
@@ -411,12 +513,18 @@
 
         dpadUp.onclick = (e) => {
             e.stopPropagation();
-            if (audioPlayer.volume < 1.0) audioPlayer.volume = Math.min(1.0, audioPlayer.volume + 0.1);
+            if (audioPlayer.volume < 1.0) {
+                audioPlayer.volume = Math.min(1.0, audioPlayer.volume + 0.1);
+                showVolume();
+            }
         };
 
         dpadDown.onclick = (e) => {
             e.stopPropagation();
-            if (audioPlayer.volume > 0.0) audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1);
+            if (audioPlayer.volume > 0.0) {
+                audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1);
+                showVolume();
+            }
         };
 
         loadSong(currentSongIndex);
