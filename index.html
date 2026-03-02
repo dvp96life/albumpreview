@@ -30,7 +30,6 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            /* Fade transition on the intro screen itself */
             transition: opacity 1s ease-out;
             text-align: center;
             padding: 20px;
@@ -163,9 +162,8 @@
         #progress-bar {
             width: 0%;
             height: 100%;
-            /* 50% Opaque Rainbow Animation */
             background-color: rgba(0, 255, 0, 0.5);
-            animation: rainbowPulse 2s infinite linear;
+            animation: rainbowPulse 4s infinite linear;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
@@ -281,7 +279,8 @@
             border-radius: 50%;
             border: 0.5cqw solid rgba(255,255,255,0.3);
             position: relative;
-            right: -14.26cqw; 
+            /* Shifted right by 2px */
+            right: -14.36cqw; 
             top: -8cqw;
         }
         
@@ -300,7 +299,7 @@
         }
         
         #trackball-btn.playing {
-            animation: rainbowFill 1.2s infinite linear;
+            animation: rainbowFill 3s infinite linear;
         }
 
         /* --- RAINBOW ANIMATIONS --- */
@@ -408,13 +407,9 @@
         // --- INTRO SCREEN LOGIC ---
         function startApp() {
             if (introScreen.style.display !== 'none') {
-                // Fade out the intro screen
                 introScreen.style.opacity = '0';
-                
-                // Show main app immediately
                 mainApp.style.display = 'block';
                 
-                // Remove intro screen from DOM after transition
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                 }, 1000);
