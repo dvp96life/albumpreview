@@ -57,6 +57,7 @@ class AlbumPreviewApp(ctk.CTk):
         # --- HORIZONTAL CONTAINER ---
         self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.main_frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.main_frame.place(relx=0.5, rely=0.5, y=-50, anchor="center")
 
         snippets_folder = os.path.join(self.base_dir, "snippets")
         self.snippets = sorted([f for f in os.listdir(snippets_folder) if f.endswith(".mp3")]) if os.path.exists(snippets_folder) else []
