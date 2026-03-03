@@ -156,7 +156,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* D-pad shift: increased to 8px down */
         #dpad.shifted {
             transform: translateY(8px);
         }
@@ -198,7 +197,6 @@
             transition: opacity 0.5s ease, transform 0.3s ease;
         }
 
-        /* Expanded Hitbox */
         #trackball-btn::after {
             content: '';
             position: absolute;
@@ -209,7 +207,6 @@
             border-radius: 50%;
         }
 
-        /* Trackball shift: increased to 26px down */
         #trackball-btn.shifted {
             transform: translateY(26px);
         }
@@ -223,7 +220,7 @@
             100% { background-color: rgba(255, 0, 0, 0.2); }
         }
 
-        #trackball-btn:active, #trackball-btn:hover { animation: hoverRainbowFill 2.4s infinite linear; }
+        #trackball-btn:active, #trackball-btn:hover { animation: rainbowFill 2.4s infinite linear; }
         #trackball-btn.playing { animation: rainbowFill 3s infinite linear; }
 
         @keyframes rainbowFill {
@@ -370,6 +367,12 @@
     const dpadLeft = document.getElementById('dpad-left');
     const dpadRight = document.getElementById('dpad-right');
 
+    // SFX Initialization
+    const skOpenSfx = new Audio('skopen.mp3');
+    skOpenSfx.preload = "auto";
+    const clickSfx = new Audio('click.mp3');
+    clickSfx.preload = "auto";
+
     let currentSongIndex = 0;
     let hasStarted = false;
     let volumeTimeout;
@@ -378,6 +381,11 @@
         if (introScreen.style.display !== 'none') {
             introScreen.style.opacity = '0';
             mainApp.style.display = 'block';
+            
+            // Interaction to unlock audio context
+            skOpenSfx.load();
+            clickSfx.load();
+
             setTimeout(() => {
                 introScreen.style.display = 'none';
             }, 1000);
@@ -391,6 +399,12 @@
         audioPlayer.src = `snippets/${songFiles[index]}`;
     }
 
+    function playSfx(sound, vol = 0.5) {
+        sound.volume = vol;
+        sound.currentTime = 0; // Reset for snappy repeat playback
+        sound.play();
+    }
+
     function updateInterfaceState() {
         if (audioPlayer.paused) {
             trackballBtn.classList.remove('playing');
@@ -402,7 +416,6 @@
             appContainer.classList.remove('paused');
 
             if (!hasStarted) {
-                // Apply the shifts and make trackball visible
                 trackballBtn.classList.add('shifted');
                 dpad.classList.add('shifted');
                 trackballBtn.style.opacity = '1';
@@ -446,13 +459,9 @@
         e.stopPropagation();
         
         if (!hasStarted) {
-            const skOpen = new Audio('skopen.mp3');
-            skOpen.volume = 0.5;
-            skOpen.play();
+            playSfx(skOpenSfx, 0.5);
         } else {
-            const clickSound = new Audio('click.mp3');
-            clickSound.volume = 0.25;
-            clickSound.play();
+            playSfx(clickSfx, 0.25);
         }
 
         if (audioPlayer.paused) {
@@ -471,16 +480,10 @@
         updateInterfaceState();
     };
 
-    function playNavClick() {
-        const clickSound = new Audio('click.mp3');
-        clickSound.volume = 0.25;
-        clickSound.play();
-    }
-
-    dpadLeft.onclick = (e) => { e.stopPropagation(); playNavClick(); currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length; loadSong(currentSongIndex); audioPlayer.play(); updateInterfaceState(); };
-    dpadRight.onclick = (e) => { e.stopPropagation(); playNavClick(); currentSongIndex = (currentSongIndex + 1) % songFiles.length; loadSong(currentSongIndex); audioPlayer.play(); updateInterfaceState(); };
-    dpadUp.onclick = (e) => { e.stopPropagation(); playNavClick(); if (audioPlayer.volume < 1.0) { audioPlayer.volume = Math.min(1.0, audioPlayer.volume + 0.1); showVolume(); } };
-    dpadDown.onclick = (e) => { e.stopPropagation(); playNavClick(); if (audioPlayer.volume > 0.0) { audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1); showVolume(); } };
+    dpadLeft.onclick = (e) => { e.stopPropagation(); playSfx(clickSfx, 0.25); currentSongIndex = (currentSongIndex - 1 + songFiles.length) % songFiles.length; loadSong(currentSongIndex); audioPlayer.play(); updateInterfaceState(); };
+    dpadRight.onclick = (e) => { e.stopPropagation(); playSfx(clickSfx, 0.25); currentSongIndex = (currentSongIndex + 1) % songFiles.length; loadSong(currentSongIndex); audioPlayer.play(); updateInterfaceState(); };
+    dpadUp.onclick = (e) => { e.stopPropagation(); playSfx(clickSfx, 0.25); if (audioPlayer.volume < 1.0) { audioPlayer.volume = Math.min(1.0, audioPlayer.volume + 0.1); showVolume(); } };
+    dpadDown.onclick = (e) => { e.stopPropagation(); playSfx(clickSfx, 0.25); if (audioPlayer.volume > 0.0) { audioPlayer.volume = Math.max(0.0, audioPlayer.volume - 0.1); showVolume(); } };
 
     loadSong(currentSongIndex);
 </script>
